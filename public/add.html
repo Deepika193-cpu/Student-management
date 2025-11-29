@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Add Student</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Add Student</h1>
+  <form id="addForm">
+    <input id="id" placeholder="ID" required />
+    <input id="name" placeholder="Name" required />
+    <input id="class" placeholder="Class" required />
+    <button type="submit">Add</button>
+  </form>
+  <p><a href="index.html">Back to list</a></p>
+
+<script>
+document.getElementById('addForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const student = {
+    id: document.getElementById('id').value,
+    name: document.getElementById('name').value,
+    class: document.getElementById('class').value
+  };
+  const res = await fetch('/students', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(student)
+  });
+  if(res.ok){
+    window.location.href = 'index.html';
+  } else {
+    const err = await res.json();
+    alert('Add failed: ' + (err.error || JSON.stringify(err)));
+  }
+});
+</script>
+</body>
+</html>

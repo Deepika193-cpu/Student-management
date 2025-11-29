@@ -1,0 +1,25 @@
+pipeline {
+  agent any
+  environment {
+    GITHUB_REPO = 'https://github.com/yourusername/student-management-system.git'
+    COMPOSE_FILE = 'docker-compose.yml'
+  }
+  stages{
+    stage('Clone'){
+      steps{ git branch:'main', url: "${GITHUB_REPO}" }
+    }
+    stage('Deploy (Windows)'){
+      steps{
+        powershell '''
+        # stop existing compose project if running
+        docker-compose -f ${env.COMPOSE_FILE} down --remove-orphans
+        docker-compose -f ${env.COMPOSE_FILE} up -d --build
+        '''
+      }
+    }
+  }
+  post{
+    success{ echo 'Deployed successfully' }
+    failure{ echo 'Deployment failed' }
+  }
+}

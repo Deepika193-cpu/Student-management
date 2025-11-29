@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Student</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Edit Student</h1>
+  <form id="editForm">
+    <input id="id" placeholder="ID" required readonly />
+    <input id="name" placeholder="Name" required />
+    <input id="class" placeholder="Class" required />
+    <button type="submit">Save</button>
+  </form>
+  <p><a href="index.html">Back to list</a></p>
+
+<script>
+function qs(name){
+  const params = new URLSearchParams(location.search);
+  return params.get(name);
+}
+
+async function load(){
+  const id = qs('id');
+  if(!id) return alert('No id');
+  const res = await fetch('/students');
+  const students = await res.json();
+  const s = students.find(x => String(x.id) === String(id));
+  if(!s) return alert('Student not found');
+  document.getElementById('id').value = s.id;
+  document.getElementById('name').value = s.name;
+  document.getElementById('class').value = s.class;
+}
+
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const student = {
+    id: document.getElementById('id').value,
+    name: document.getElementById('name').value,
+    class: document.getElementById('class').value
+  };
+  const res = await fetch(`/students/${student.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(student)
+  });
+  if(res.ok) window.location.href = 'index.html';
+  else {
+    const err = await res.json();
+    alert('Update failed: ' + (err.error || JSON.stringify(err)));
+  }
+});
+
+load();
+</script>
+</body>
+</html>

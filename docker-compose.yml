@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  student-app:
+    build: .
+    container_name: student-container
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./students.json:/app/students.json
+    restart: unless-stopped
